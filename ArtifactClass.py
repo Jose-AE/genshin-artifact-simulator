@@ -52,6 +52,8 @@ class Artifact:
     #generate random stats when artifact is created 
     def __init__(self):
 
+        self.MaxLevel = 20 #max level the artifact can be upgraded to   
+
         self.Level = 0
         self.Set = random.randint(0,1)
         self.Type = self.TYPES[random.randint(0,len(self.TYPES)-1)]
@@ -91,17 +93,20 @@ class Artifact:
     #function to level up artifact by n levels 
     def LevelUp(self, levels):
         
-        original_level = self.Level
-        self.Level += levels
+        original_level = self.Level #store current level, before level up 
+        #self.Level += levels #add levels to arifact 
+        self.Level = min(self.Level+levels ,self.MaxLevel)#add levels to arifact but cap at max possible level  
+        times_to_upgrade = math.floor(self.Level/4)  - math.floor(original_level/4) #calculate how many times it will have substat upgrades
 
-        if self.Level%4 == 0: #if upgrade substat level 
-        
-            for _ in range(math.floor( (self.Level-original_level)/4)): #loop amount of stat level ups
+        #print(times_to_upgrade)
 
-                if len(self.SubStats) == 3: #if level up and 3 stats add one 
-                    self.GenerateSubStat()
-                else: #else level up stat 
-                    sub_stat_to_upgrade = list(self.SubStats)[random.randint(0,3)]
-                    self.SubStats[sub_stat_to_upgrade] += self.ARTIFACT_SUB_STATS_ROLL_RANGE[sub_stat_to_upgrade][random.randint(0,len(self.ARTIFACT_SUB_STATS_ROLL_RANGE[sub_stat_to_upgrade])-1)]
+        for upgrade in range(times_to_upgrade): #loop amount of stat level ups
 
-                    #print(sub_stat_to_upgrade)
+            if len(self.SubStats) == 3: #if level up and 3 stats add one 
+                self.GenerateSubStat()
+            else: #else level up stat 
+                sub_stat_to_upgrade = list(self.SubStats)[random.randint(0,3)]
+                self.SubStats[sub_stat_to_upgrade] += self.ARTIFACT_SUB_STATS_ROLL_RANGE[sub_stat_to_upgrade][random.randint(0,len(self.ARTIFACT_SUB_STATS_ROLL_RANGE[sub_stat_to_upgrade])-1)]
+
+
+
